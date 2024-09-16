@@ -3,7 +3,7 @@
          
     <a name="" id="" class="btn btn-primary" href="/create" role="button"> Add employee </a>
 
-<table class="table">
+    <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -13,14 +13,16 @@
                 </tr>
             </thead>
             <tbody>
+        {{range.}}    
                 <tr>
-                    <td>1</td>
-                    <td>Lucas</td>
-                    <td>lucasaraya19@hotmail.com</td>
-                    <td> Editar | Borrar </td>
+                    <td>{{.Id}}</td>
+                    <td>{{.Name}}</td>
+                    <td>{{.Email}}</td>
+                    <td> Editar {{.Id}} | Borrar {{.Id}}</td>
                 </tr>
+        {{end}}    
             </tbody>
-</table>
+    </table>
     
 {{template "footer"}}
 {{end}}

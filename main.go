@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -28,9 +29,43 @@ var templates = template.Must(template.ParseGlob("templates/*"))
 estan en la carpeta templates/ y los compila para poder trabajar con ellos de forma
 dinamica guardandolos en la variable templates*/
 
+type Empleado struct {
+	Id    int
+	Name  string
+	Email string
+}
+
 func Index(w http.ResponseWriter, r *http.Request) {
 
-	templates.ExecuteTemplate(w, "index", nil)
+	conexionEstablecida := conexionBD()
+
+	registros, err := conexionEstablecida.Query("SELECT * FROM empleados")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	empleado := Empleado{}
+	arrayEmpleado := []Empleado{}
+
+	for registros.Next() {
+		var id int
+		var name, email string
+		err = registros.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+		empleado.Id = id
+		empleado.Name = name
+		empleado.Email = email
+
+		arrayEmpleado = append(arrayEmpleado, empleado)
+	}
+
+	fmt.Println(arrayEmpleado)
+
+	templates.ExecuteTemplate(w, "index", arrayEmpleado)
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
