@@ -18,7 +18,9 @@
                     <td>{{.Id}}</td>
                     <td>{{.Name}}</td>
                     <td>{{.Email}}</td>
-                    <td> Editar {{.Id}} | Borrar {{.Id}}</td>
+                    <td> <a name="" id="" class="btn btn-primary" href="/edite?id={{.Id}}" role="button">Edit</a> | 
+                    <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
+                    </td>
                 </tr>
         {{end}}    
             </tbody>

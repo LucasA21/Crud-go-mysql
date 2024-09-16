@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -24,10 +23,6 @@ func conexionBD() (conexion *sql.DB) {
 }
 
 var templates = template.Must(template.ParseGlob("templates/*"))
-
-/* Con la funcion template.ParseGlob guarda todos los archivos estaticos que
-estan en la carpeta templates/ y los compila para poder trabajar con ellos de forma
-dinamica guardandolos en la variable templates*/
 
 type Empleado struct {
 	Id    int
@@ -63,8 +58,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		arrayEmpleado = append(arrayEmpleado, empleado)
 	}
 
-	fmt.Println(arrayEmpleado)
-
 	templates.ExecuteTemplate(w, "index", arrayEmpleado)
 }
 
@@ -93,14 +86,28 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*Gracias a la funcion de arriba template.ParseGlob podemos hacer referencia
-al template index y crear un handle para enrutar esa funcion con la ruta*/
+func Delete(w http.ResponseWriter, r *http.Request) {
+	idEmpleado := r.URL.Query().Get("id")
+
+	conexionEstablecida := conexionBD()
+
+	borrarRegistros, err := conexionEstablecida.Prepare("DELETE FROM empleados WHERE id=?")
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	borrarRegistros.Exec(idEmpleado)
+
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
 
 func main() {
 
 	http.HandleFunc("/", Index)
 	http.HandleFunc("/create", Create)
 	http.HandleFunc("/insert", Insert)
+	http.HandleFunc("/delete", Delete)
 
 	log.Println("Server Runing...")
 
