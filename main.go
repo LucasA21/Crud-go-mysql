@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -102,12 +103,40 @@ func Delete(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 
+func Edit(w http.ResponseWriter, r *http.Request) {
+	idEmpleado := r.URL.Query().Get("id")
+
+	conexionEstablecida := conexionBD()
+
+	registro, err := conexionEstablecida.Query("SELECT * FROM empleados WHERE id=?", idEmpleado)
+
+	empleado := Empleado{}
+
+	for registro.Next() {
+		var id int
+		var name, email string
+		err = registro.Scan(&id, &name, &email)
+
+		if err != nil {
+			panic(err.Error())
+		}
+		empleado.Id = id
+		empleado.Name = name
+		empleado.Email = email
+	}
+
+	fmt.Println(empleado)
+
+	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+}
+
 func main() {
 
 	http.HandleFunc("/", Index)
 	http.HandleFunc("/create", Create)
 	http.HandleFunc("/insert", Insert)
 	http.HandleFunc("/delete", Delete)
+	http.HandleFunc("/edit", Edit)
 
 	log.Println("Server Runing...")
 
