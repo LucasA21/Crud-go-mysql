@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -87,6 +86,28 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+
+		id := r.FormValue("id")
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		conexionEstablecida := conexionBD()
+
+		actualizarRegistros, err := conexionEstablecida.Prepare("UPDATE empleados SET name=? , email=? WHERE id=?")
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		actualizarRegistros.Exec(name, email, id)
+
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+
+	}
+}
+
 func Delete(w http.ResponseWriter, r *http.Request) {
 	idEmpleado := r.URL.Query().Get("id")
 
@@ -110,6 +131,10 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 
 	registro, err := conexionEstablecida.Query("SELECT * FROM empleados WHERE id=?", idEmpleado)
 
+	if err != nil {
+		panic(err.Error())
+	}
+
 	empleado := Empleado{}
 
 	for registro.Next() {
@@ -120,14 +145,13 @@ func Edit(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err.Error())
 		}
+
 		empleado.Id = id
 		empleado.Name = name
 		empleado.Email = email
 	}
 
-	fmt.Println(empleado)
-
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	templates.ExecuteTemplate(w, "edit", empleado)
 }
 
 func main() {
@@ -137,8 +161,9 @@ func main() {
 	http.HandleFunc("/insert", Insert)
 	http.HandleFunc("/delete", Delete)
 	http.HandleFunc("/edit", Edit)
+	http.HandleFunc("/update", Update)
 
-	log.Println("Server Runing...")
+	log.Println("Server Runing in http://localhost:8080")
 
 	http.ListenAndServe(":8080", nil)
 

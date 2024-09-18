@@ -3,13 +3,15 @@
          
     <a name="" id="" class="btn btn-primary" href="/create" role="button"> Add employee </a>
 
+    <br/><br/>
+
     <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Acciones</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,7 +20,8 @@
                     <td>{{.Id}}</td>
                     <td>{{.Name}}</td>
                     <td>{{.Email}}</td>
-                    <td> <a name="" id="" class="btn btn-primary" href="/edite?id={{.Id}}" role="button">Edit</a> | 
+                    <td> 
+                    <a name="" id="" class="btn btn-warning" href="/edit?id={{.Id}}" role="button">Edit</a> | 
                     <a name="" id="" class="btn btn-danger" href="/delete?id={{.Id}}" role="button">Delete</a>
                     </td>
                 </tr>
